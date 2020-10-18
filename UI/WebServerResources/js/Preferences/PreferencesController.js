@@ -13,7 +13,7 @@
 
     this.$onInit = function() {
       this.preferences = Preferences;
-      this.passwords = { newPassword: null, newPasswordConfirmation: null };
+      this.passwords = { newPassword: null, newPasswordConfirmation: null, oldPassword: null };
       this.timeZonesList = $window.timeZonesList;
       this.timeZonesSearchText = '';
       this.sieveVariablesCapability = ($window.sieveCapabilities.indexOf('variables') >= 0);
@@ -53,6 +53,11 @@
             $window.location.reload(true);
           });
         });
+    };
+
+    this.onDesktopNotificationsChange = function() {
+      if (this.preferences.defaults.SOGoDesktopNotifications)
+        this.preferences.authorizeNotifications();
     };
 
     this.resetContactsCategories = function(form) {
@@ -452,7 +457,7 @@
           if (!options || !options.quick) {
             $mdToast.show(
               $mdToast.simple()
-                .content(l('Preferences saved'))
+                .textContent(l('Preferences saved'))
                 .position('bottom right')
                 .hideDelay(2000));
             form.$setPristine();
@@ -462,20 +467,29 @@
       return $q.reject('Invalid form');
     };
 
-    this.canChangePassword = function() {
+    this.canChangePassword = function(form) {
+      if (this.passwords.newPasswordConfirmation && this.passwords.newPasswordConfirmation.length &&
+          this.passwords.newPassword != this.passwords.newPasswordConfirmation) {
+        form.newPasswordConfirmation.$setValidity('newPasswordMismatch', false);
+        return false;
+      }
+      else {
+        form.newPasswordConfirmation.$setValidity('newPasswordMismatch', true);
+      }
       if (this.passwords.newPassword && this.passwords.newPassword.length > 0 &&
           this.passwords.newPasswordConfirmation && this.passwords.newPasswordConfirmation.length &&
-          this.passwords.newPassword == this.passwords.newPasswordConfirmation)
+          this.passwords.newPassword == this.passwords.newPasswordConfirmation &&
+          this.passwords.oldPassword && this.passwords.oldPassword.length > 0)
         return true;
 
       return false;
     };
 
     this.changePassword = function() {
-      Authentication.changePassword(this.passwords.newPassword).then(function() {
+      Authentication.changePassword(this.passwords.newPassword, this.passwords.oldPassword).then(function() {
         var alert = $mdDialog.alert({
           title: l('Password'),
-          content: l('The password was changed successfully.'),
+          textContent: l('The password was changed successfully.'),
           ok: l('OK')
         });
         $mdDialog.show( alert )
