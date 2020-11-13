@@ -28,3 +28,6 @@ UI/WebServerResources/scss/.sass-cache/
 config.make
 doc
 tags
+.vagrant
+.configure-*
+UI/WebServerResources/package-lock.json
