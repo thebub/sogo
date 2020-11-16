@@ -10,10 +10,10 @@ Environment="PREFORK=3"
 Environment=ASAN_OPTIONS=exitcode=0:detect_leaks=1
 EnvironmentFile=-/etc/default/sogo
 Type=forking
-Environment=LD_LIBRARY_PATH=/usr/local/lib64:/usr/local/sogo:/usr/local/lib/GNUstep/Frameworks/SOGo.framework/Versions/4/sogo/:/usr/local/lib/sogo
-ExecStart=/usr/local/sbin/sogod -WOWorkersCount ${PREFORK} -WOPidFile /var/run/sogo/sogo.pid -WOLogFile /var/log/sogo/sogo.log
+Environment=LD_LIBRARY_PATH=/usr/local/lib:/usr/local/sogo:/usr/local/lib/GNUstep/Frameworks/SOGo.framework/Versions/4/sogo/:/usr/local/lib/sogo
+ExecStart=/usr/local/sbin/sogod -WOWorkersCount ${PREFORK} -WOPidFile /run/sogo/sogo.pid -WOLogFile /var/log/sogo/sogo.log
 RuntimeDirectory=sogo
-PIDFile=/var/run/sogo/sogo.pid
-User=sogo
+PIDFile=/run/sogo/sogo.pid
+User=vagrant
 [Install]
 WantedBy=multi-user.target
